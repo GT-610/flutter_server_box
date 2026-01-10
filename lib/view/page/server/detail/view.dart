@@ -579,7 +579,7 @@ class _ServerDetailPageState extends ConsumerState<ServerDetailPage> with Single
     final (read, write) = ss.diskIO.getSpeed(disk.path);
     final text = () {
       final use = '${l10n.used} ${disk.used.kb2Str} / ${disk.size.kb2Str}';
-      if (read == null || write == null) return use;
+      if (read == 'N/A' && write == 'N/A') return use;
       return '$use\n${l10n.read} $read | ${l10n.write} $write';
     }();
 

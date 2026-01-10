@@ -46,7 +46,6 @@ class Disk with EquatableMixin {
     raw = raw.trim();
     
     if (raw.isEmpty) {
-      dprint('Empty disk info data received');
       return list;
     }
 
@@ -308,17 +307,17 @@ class DiskIO extends TimeSeq<DiskIOPiece> {
     return (read, write);
   }
 
-  (String?, String?) getSpeed(String dev) {
+  (String, String) getSpeed(String dev) {
     final (read_, write_) = _getSpeed(dev);
-    if (read_ == null || write_ == null) return (null, null);
+    if (read_ == null || write_ == null) return ('N/A', 'N/A');
     final read = '${read_.bytes2Str}/s';
     final write = '${write_.bytes2Str}/s';
     return (read, write);
   }
 
-  (String?, String?) cachedAllSpeed = (null, null);
-  (String?, String?) _getAllSpeed() {
-    if (pre.isEmpty || now.isEmpty) return (null, null);
+  (String, String) cachedAllSpeed = ('N/A', 'N/A');
+  (String, String) _getAllSpeed() {
+    if (pre.isEmpty || now.isEmpty) return ('N/A', 'N/A');
     var (read, write) = (0.0, 0.0);
     for (var item in pre) {
       /// Issue #314
