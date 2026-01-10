@@ -89,7 +89,6 @@ class _MyAppState extends State<MyApp> {
           UIs.primaryColor = fallbackColor;
           UIs.colorSeed = fallbackColor;
         }
-
         return _buildApp(context, light: lightTheme, dark: darkTheme);
       },
     );
