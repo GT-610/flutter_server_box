@@ -92,8 +92,8 @@ ${ss.err?.message ?? 'null'}
           return FadeTransition(opacity: animation, child: child);
         },
         child: _buildIOData(
-          isSpeed ? '${l10n.read}:\n$r' : 'Total:\n${ss.diskUsage?.size.kb2Str}',
-          isSpeed ? '${l10n.write}:\n$w' : 'Used:\n${ss.diskUsage?.used.kb2Str}',
+          isSpeed ? '${l10n.read}:\n$r' : 'Total:\n${ss.diskUsage?.size.kb2Str ?? 'N/A'}',
+          isSpeed ? '${l10n.write}:\n$w' : 'Used:\n${ss.diskUsage?.used.kb2Str ?? 'N/A'}',
           onTap: () {
             cardNoti.value = v.copyWith(diskIO: !isSpeed);
           },
