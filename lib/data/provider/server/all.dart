@@ -92,7 +92,7 @@ class ServersNotifier extends _$ServersNotifier {
     return null;
   }
 
-  Future<void>? _refreshCompleter;
+  Future<void>? _refreshInProgress;
 
   /// if [spi] is specificed then only refresh this server
   /// [onlyFailed] only refresh failed servers
