@@ -27,7 +27,7 @@ abstract class ContainerState with _$ContainerState {
     @Default(null) List<ContainerPs>? items,
     @Default(null) List<ContainerImg>? images,
     @Default(null) String? version,
-    @Default(null) ContainerErr? error,
+    @Default(<ContainerErr>[]) List<ContainerErr> errors,
     @Default(null) String? runLog,
     @Default(ContainerType.docker) ContainerType type,
     @Default(false) bool isBusy,
@@ -50,7 +50,7 @@ class ContainerNotifier extends _$ContainerNotifier {
   }
 
   Future<void> setType(ContainerType type) async {
-    state = state.copyWith(type: type, error: null, runLog: null, items: null, images: null, version: null);
+    state = state.copyWith(type: type, errors: [], runLog: null, items: null, images: null, version: null);
     Stores.container.setType(type, hostId);
     sudoCompleter = Completer<bool>();
     await refresh();
@@ -139,10 +139,12 @@ class ContainerNotifier extends _$ContainerNotifier {
     final segments = raw.split(ScriptConstants.separator);
     if (segments.length != ContainerCmdType.values.length) {
       state = state.copyWith(
-        error: ContainerErr(
-          type: ContainerErrType.segmentsNotMatch,
-          message: 'Container segments: ${segments.length}',
-        ),
+        errors: [
+          ContainerErr(
+            type: ContainerErrType.segmentsNotMatch,
+            message: 'Container segments: ${segments.length}',
+          ),
+        ],
       );
       Loggers.app.warning('Container segments: ${segments.length}\n$raw');
       return;
@@ -152,7 +154,7 @@ class ContainerNotifier extends _$ContainerNotifier {
     final verRaw = ContainerCmdType.version.find(segments);
     try {
       final version = json.decode(verRaw)['Client']['Version'];
-      state = state.copyWith(version: version, error: null);
+      state = state.copyWith(version: version);
     } catch (e, trace) {
       if (state.error == null) {
         state = state.copyWith(
