@@ -135,6 +135,17 @@ class ContainerNotifier extends _$ContainerNotifier {
       return;
     }
 
+    /// Pre-parse Podman detection
+    if (raw.contains(_podmanEmulationMsg)) {
+      state = state.copyWith(
+        error: ContainerErr(
+          type: ContainerErrType.podmanDetected,
+          message: l10n.podmanDockerEmulationDetected,
+        ),
+      );
+      return;
+    }
+
     // Check result segments count
     final segments = raw.split(ScriptConstants.separator);
     if (segments.length != ContainerCmdType.values.length) {
