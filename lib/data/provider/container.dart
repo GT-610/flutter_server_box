@@ -146,6 +146,19 @@ class ContainerNotifier extends _$ContainerNotifier {
       return;
     }
 
+    /// Filter out sudo password prompt from output
+    if (errs.any((e) => e.contains('[sudo] password'))) {
+      raw = raw.split('\n').where((line) => !line.contains('[sudo] password')).join('\n');
+    }
+
+    /// Detect Podman not installed when using Podman mode
+    if (state.type == ContainerType.podman &&
+        (errs.any((e) => e.contains('podman: not found')) ||
+            raw.contains('podman: not found'))) {
+      state = state.copyWith(error: ContainerErr(type: ContainerErrType.notInstalled));
+      return;
+    }
+
     // Check result segments count
     final segments = raw.split(ScriptConstants.separator);
     if (segments.length != ContainerCmdType.values.length) {
