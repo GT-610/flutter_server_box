@@ -411,6 +411,14 @@ enum _SortType {
     };
   }
 
+  int compareTuple((FileSystemEntity, FileStat) a, (FileSystemEntity, FileStat) b) {
+    return switch (this) {
+      _SortType.name => a.$1.path.compareTo(b.$1.path),
+      _SortType.size => a.$2.size.compareTo(b.$2.size),
+      _SortType.time => a.$2.modified.compareTo(b.$2.modified),
+    };
+  }
+
   String get i18n => switch (this) {
     name => libL10n.name,
     size => l10n.size,
