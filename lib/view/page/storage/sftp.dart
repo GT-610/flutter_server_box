@@ -98,15 +98,11 @@ class _SftpPageState extends ConsumerState<SftpPage> with AfterLayoutMixin {
     if (Stores.setting.sftpOpenLastPath.fetch()) {
       final history = Stores.history.sftpLastPath.fetch(widget.args.spi.id);
       if (history != null) {
-        SftpClient? sftp;
         try {
-          final normalizedHistory = _normalizeSftpPath(history);
-          sftp = await _client.sftp();
-          await sftp.listdir(normalizedHistory);
-          initPath = normalizedHistory;
+          final sftp = await _client.sftp();
+          await sftp.listdir(history);
+          initPath = history;
         } catch (_) {
-        } finally {
-          sftp?.close();
         }
       }
     }
@@ -651,7 +647,10 @@ extension _Actions on _SftpPageState {
 
           // Only update history when success
           if (Stores.setting.sftpOpenLastPath.fetch()) {
-            final normalizedPath = _normalizeSftpPath(listPath);
+            var normalizedPath = listPath;
+            while (normalizedPath.contains('//')) {
+              normalizedPath = normalizedPath.replaceAll('//', '/');
+            }
             Stores.history.sftpLastPath.put(widget.args.spi.id, normalizedPath);
           }
 
