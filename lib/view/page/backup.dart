@@ -31,6 +31,7 @@ final class _BackupPageState extends ConsumerState<BackupPage> with AutomaticKee
   final webdavLoading = false.vn;
   final gistLoading = false.vn;
   late Future<_ICloudBackupStatus?> _icloudStatusFuture;
+  var _isRefreshingIcloud = false;
 
   @override
   void initState() {
@@ -368,13 +369,27 @@ final class _BackupPageState extends ConsumerState<BackupPage> with AutomaticKee
   }
 
   void _refreshIcloudStatus({bool notify = true}) {
-    final future = _loadIcloudStatus();
+    if (_isRefreshingIcloud) return;
+
+    final future = _loadIcloudStatus().whenComplete(() {
+      if (!mounted) {
+        _isRefreshingIcloud = false;
+        return;
+      }
+
+      setState(() {
+        _isRefreshingIcloud = false;
+      });
+    });
+
     if (!notify) {
+      _isRefreshingIcloud = true;
       _icloudStatusFuture = future;
       return;
     }
 
     setState(() {
+      _isRefreshingIcloud = true;
       _icloudStatusFuture = future;
     });
   }
@@ -420,7 +435,7 @@ final class _BackupPageState extends ConsumerState<BackupPage> with AutomaticKee
           title: Text(l10n.icloudBackupStatusTitle),
           subtitle: Text(subtitle, style: UIs.textGrey),
           trailing: IconButton(
-            onPressed: () {
+            onPressed: _isRefreshingIcloud ? null : () {
               _refreshIcloudStatus();
             },
             icon: const Icon(Icons.refresh),
