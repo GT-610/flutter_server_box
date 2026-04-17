@@ -58,7 +58,7 @@ dart run fl_build -p android
 
 需要：
 - Android SDK
-- Java Development Kit (JDK)
+- Java Development Kit 21 (JDK 21)
 - 用于签名的 Keystore
 
 ### macOS

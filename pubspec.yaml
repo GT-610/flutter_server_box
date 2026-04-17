@@ -76,6 +76,10 @@ dev_dependencies:
   fl_build:
     path: packages/fl_build
 
+dependency_overrides:
+  jni:
+    path: packages/jni
+
 flutter:
   generate: true
 

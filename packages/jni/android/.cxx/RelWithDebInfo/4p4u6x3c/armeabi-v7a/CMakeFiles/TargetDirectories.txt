@@ -1,0 +1,3 @@
+D:/Data/Code/flutter_server_box/packages/jni/android/.cxx/RelWithDebInfo/4p4u6x3c/armeabi-v7a/CMakeFiles/jni.dir
+D:/Data/Code/flutter_server_box/packages/jni/android/.cxx/RelWithDebInfo/4p4u6x3c/armeabi-v7a/CMakeFiles/edit_cache.dir
+D:/Data/Code/flutter_server_box/packages/jni/android/.cxx/RelWithDebInfo/4p4u6x3c/armeabi-v7a/CMakeFiles/rebuild_cache.dir

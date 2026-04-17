@@ -11,6 +11,18 @@ subprojects {
 }
 
 subprojects { subproject ->
+    subproject.tasks.withType(JavaCompile).configureEach {
+        javaCompiler = javaToolchains.compilerFor {
+            languageVersion = JavaLanguageVersion.of(21)
+        }
+    }
+
+    subproject.plugins.withId('org.jetbrains.kotlin.android') {
+        subproject.kotlin.jvmToolchain(21)
+    }
+}
+
+subprojects { subproject ->
   // Only works on com.android.application(the main app module)
   if (subproject.plugins.hasPlugin('com.android.application')) {
     subproject.afterEvaluate {
