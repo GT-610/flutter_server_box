@@ -34,9 +34,12 @@ extension _HomePageSettings on _HomePageState {
             child: NestedNavigator(
               key: const ValueKey('settings'),
               navigatorKey: _settingsNavKey,
-              rootBuilder: (_) => const SafeArea(
+              rootBuilder: (_) => SafeArea(
                 bottom: false,
-                child: SettingsPage(),
+                child: SettingsPage(
+                  onClose: _closeSettings,
+                  forceNarrow: _narrow,
+                ),
               ),
             ),
           ),
@@ -76,11 +79,11 @@ extension _HomePageSettings on _HomePageState {
 
   /// Shows the settings where a tab is shown, rather than over everything.
   ///
-  /// Only where there is a rail to keep on screen. A phone has none to cover,
-  /// and no room for a second strip under the settings' own floating one — so
-  /// there they stay a page, with the bar's back button as the way out.
+  /// Desktop windows keep the same settings navigator across resizes, so a
+  /// rail that appears later is not covered by a route opened while narrow.
+  /// On a phone the settings still open as a separate page.
   void _openSettings() {
-    if (_narrow) {
+    if (_narrow && !isDesktop) {
       SettingsPage.route.go(context);
       return;
     }

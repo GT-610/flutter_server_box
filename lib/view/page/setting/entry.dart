@@ -90,7 +90,13 @@ part 'entries/sftp.dart';
 part 'entries/ssh.dart';
 
 class SettingsPage extends ConsumerStatefulWidget {
-  const SettingsPage({super.key});
+  const SettingsPage({super.key, this.onClose, this.forceNarrow = false});
+
+  /// Returns to the host's tabs when settings are embedded in its content.
+  final VoidCallback? onClose;
+
+  /// Keeps the back button until the host has room for its navigation rail.
+  final bool forceNarrow;
 
   static const route = AppRouteNoArg(page: SettingsPage.new, path: '/settings');
 
@@ -325,7 +331,9 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
       builder: (context, constraints) {
         // The width `AdaptivePanes` splits at, so that a window wide enough for
         // two columns gets two columns here as well.
-        final wide = constraints.maxWidth >= AdaptivePanes.kSplitWidth;
+        final wide =
+            !widget.forceNarrow &&
+            constraints.maxWidth >= AdaptivePanes.kSplitWidth;
         return _buildScaffold(
           wide: wide,
           menu: menu,

@@ -417,7 +417,9 @@ class _HomePageState extends ConsumerState<HomePage>
               ),
           ],
         ),
-        bottomNavigationBar: narrow && !_wantsWindow ? _buildBottomBar() : null,
+        bottomNavigationBar: narrow && !_wantsWindow && !_settingsShowing
+            ? _buildBottomBar()
+            : null,
       ),
     );
 

@@ -112,7 +112,9 @@ extension _SettingsLayout on _SettingsPageState {
                   ? BackButton(
                       onPressed: _searching ? _clearSearch : _onTabBack,
                     )
-                  : null,
+                  : widget.onClose == null
+                  ? null
+                  : BackButton(onPressed: widget.onClose),
               actions: actions,
             ),
       // The same column every other list-beside-content page has, rather than

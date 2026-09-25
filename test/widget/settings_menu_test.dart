@@ -103,7 +103,11 @@ void main() {
 
   /// Pushed rather than shown as the home page, which is how it is reached and
   /// what decides whether the bar has anything to go back with.
-  Future<void> pump(WidgetTester tester, {required double width}) async {
+  Future<void> pump(
+    WidgetTester tester, {
+    required double width,
+    WidgetBuilder? settingsBuilder,
+  }) async {
     tester.view.devicePixelRatio = 1;
     tester.view.physicalSize = Size(width, 900);
     addTearDown(tester.view.reset);
@@ -121,7 +125,9 @@ void main() {
             body: Builder(
               builder: (ctx) => TextButton(
                 onPressed: () => Navigator.of(ctx).push(
-                  MaterialPageRoute<void>(builder: (_) => const SettingsPage()),
+                  MaterialPageRoute<void>(
+                    builder: settingsBuilder ?? (_) => const SettingsPage(),
+                  ),
                 ),
                 child: const Text('open'),
               ),
@@ -632,6 +638,52 @@ void main() {
     for (final tile in tester.widgetList<ListTile>(tiles)) {
       expect(tile.leading, isNotNull);
     }
+  });
+
+  testWidgets('embedded settings keep back until the host rail fits', (
+    tester,
+  ) async {
+    var closed = false;
+    await pump(
+      tester,
+      width: 840,
+      settingsBuilder: (_) =>
+          SettingsPage(forceNarrow: true, onClose: () => closed = true),
+    );
+
+    expect(find.byKey(settingsHeaderKey), findsNothing);
+    expect(backBtn, findsOneWidget);
+    await tester.tap(backBtn);
+    expect(closed, isTrue);
+  });
+
+  testWidgets('embedded settings can close after a narrow-wide-narrow resize', (
+    tester,
+  ) async {
+    var closes = 0;
+    await pump(
+      tester,
+      width: 500,
+      settingsBuilder: (_) => SettingsPage(onClose: () => closes++),
+    );
+    await tester.tap(menuRow(libL10n.server));
+    await settle(tester, 20);
+    final state = tester.state(find.byType(SettingsPage));
+
+    tester.view.physicalSize = const Size(1200, 900);
+    await settle(tester, 20);
+    expect(find.byKey(settingsHeaderKey), findsOneWidget);
+    expect(tester.state(find.byType(SettingsPage)), same(state));
+
+    tester.view.physicalSize = const Size(500, 900);
+    await settle(tester, 20);
+    expect(barTitle(tester), libL10n.general);
+    await tester.tap(backBtn);
+    await settle(tester, 20);
+    expect(closes, 0, reason: 'back first leaves the settings section');
+    expect(barTitle(tester), libL10n.setting);
+    await tester.tap(backBtn);
+    expect(closes, 1, reason: 'back at the root returns to the host tabs');
   });
 
   testWidgets('picking a row goes in and brings up its level as tabs', (
