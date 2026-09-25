@@ -727,7 +727,7 @@ void main() {
 
   /// The mask over the bar, which is only there while there is something to
   /// mask — so this is `findsNothing` as often as it is `findsOneWidget`.
-  Finder edgeFade() => find.ancestor(
+  Finder edgeFade() => find.descendant(
     of: find.byKey(settingsTabsKey),
     matching: find.byType(ShaderMask),
   );
@@ -751,6 +751,29 @@ void main() {
     await settle(tester, 20);
 
     expect(edgeFade(), findsOneWidget);
+  });
+
+  testWidgets('the floating surface stays inside a very narrow window', (
+    tester,
+  ) async {
+    await pump(tester, width: 286);
+    await tester.tap(menuRow(libL10n.app));
+    await settle(tester, 20);
+
+    final bar = find.byKey(settingsTabsKey);
+    final bounds = tester.getRect(bar);
+    expect(bounds.left, greaterThanOrEqualTo(12));
+    expect(bounds.right, lessThanOrEqualTo(274));
+    expect(bounds.height, 56);
+
+    final target = AppLocalizations.of(tester.element(bar))!.homeTabs;
+    await tester.ensureVisible(tabRow(target));
+    await settle(tester, 20);
+    await tester.tap(tabRow(target));
+    await settle(tester, 20);
+    expect(barTitle(tester), target);
+    expect(tester.getRect(bar), bounds);
+    expect(tester.takeException(), isNull);
   });
 
   testWidgets('a tab several along does not announce the ones passed through', (
